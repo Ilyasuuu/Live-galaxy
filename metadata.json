@@ -1,0 +1,7 @@
+{
+  "name": "Sonic Morph Galaxy",
+  "description": "A high-performance WebGL particle simulation that morphs into a face based on microphone input.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
