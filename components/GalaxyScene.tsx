@@ -106,11 +106,14 @@ export default function GalaxyScene() {
     const colorCyanStar = new THREE.Color('#00E5FF'); 
     const colorSilverStar = new THREE.Color('#E0F7FA'); 
 
+    // Golden ratio for uniform Fibonacci sphere distribution
+    const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const u = Math.random();
-      const v = Math.random();
-      const theta = 2 * Math.PI * u;
-      const phi = Math.acos(2 * v - 1);
+      // Use a Fibonacci sphere to perfectly distribute initial angles, inherently preventing clumping
+      const theta = 2 * Math.PI * i / goldenRatio;
+      const phi = Math.acos(1 - 2 * (i + 0.5) / PARTICLE_COUNT);
+      // Randomize the radius to give the galaxy volume and depth
       const r = Math.pow(Math.random(), 1/3) * 35;
 
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
@@ -205,6 +208,19 @@ export default function GalaxyScene() {
           posGalaxy.x = r * cos(angle);
           posGalaxy.z = r * sin(angle);
           posGalaxy.y += sin(uTime + posGalaxy.x * 0.1 + aRandom.y * 10.0) * 1.5;
+
+          // Spatial pseudo-repulsion (Dynamic Anti-clumping)
+          // Creates a divergent field based on time, space, and the particle's unique ID.
+          // As particles get close to each other, this unique offset pushes them apart,
+          // creating a dynamic, "dancing" Brownian motion that prevents static clumping.
+          float spatialNoise = sin(posGalaxy.x * 1.5) + cos(posGalaxy.y * 1.5) + sin(posGalaxy.z * 1.5);
+          vec3 repulsionOffset = vec3(
+            sin(uTime * 1.2 + aRandom.x * 30.0 + spatialNoise),
+            cos(uTime * 1.3 + aRandom.y * 30.0 + spatialNoise),
+            sin(uTime * 1.1 + aRandom.z * 30.0 + spatialNoise)
+          ) * 1.5; // Strength of the repulsion
+          
+          posGalaxy += repulsionOffset;
 
           // Audio reactive outward push
           vec3 pushDir = normalize(posGalaxy + vec3(0.0001));
@@ -572,15 +588,15 @@ export default function GalaxyScene() {
               return (
                 <span
                   key={`${word}-${i}`}
-                  className={`font-black uppercase text-[9vw] md:text-[120px] leading-none tracking-tighter transition-all duration-75 ease-out ${
+                  className={`font-black uppercase text-[5.4vw] md:text-[72px] leading-none tracking-tighter transition-all duration-75 ease-out ${
                     isActive 
                       ? 'text-[#FFD54F] scale-110 z-10 opacity-100' // Warm amber / soft gold
                       : isSpoken 
-                        ? 'text-[#87CEEB] scale-100 opacity-90' // Soft sky blue
-                        : 'text-[#87CEEB] scale-95 opacity-40' // Translucent sky blue for upcoming words
+                        ? 'text-[#F8F9FA] scale-100 opacity-90' // Soft white
+                        : 'text-[#F8F9FA] scale-95 opacity-40' // Translucent soft white for upcoming words
                   }`}
                   style={{ 
-                    fontFamily: '"Pixelify Sans", sans-serif',
+                    fontFamily: '"Merienda", cursive',
                     // Heavy drop shadow for perfect readability over dark backgrounds
                     textShadow: '0px 12px 35px rgba(0,0,0,1), 0px 5px 15px rgba(0,0,0,0.9), 0px 0px 10px rgba(0,0,0,0.8)'
                   }}

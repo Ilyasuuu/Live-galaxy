@@ -23,7 +23,7 @@ export default function App() {
           <div className="max-w-xl text-center flex flex-col items-center">
             <h1 
               className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-[#FFD54F] drop-shadow-[0_4px_20px_rgba(255,213,79,0.3)] animate-pulse"
-              style={{ fontFamily: '"Pixelify Sans", sans-serif' }}
+              style={{ fontFamily: '"Merienda", cursive' }}
             >
               Sonic Entity
             </h1>
